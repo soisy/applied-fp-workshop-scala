@@ -14,6 +14,7 @@ class Map extends munit.FunSuite {
   test("valid creation, can checkIn") {
     val item = createItem("100")
     // TODO: chain checkIn of 10 items and write the assert
+    assertEquals(item.map(checkIn(10, _)), Some(Item(110)))
   }
 
   test("invalid creation - map short circuit") {

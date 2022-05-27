@@ -1,5 +1,7 @@
 package firststeps
 
+import javax.smartcardio.Card
+
 /*
  * In OOP model object that encapsulate data and expose behaviours.
  * This two concepts are brigs together thanks to class definitions.
@@ -42,6 +44,24 @@ class ModelData extends munit.FunSuite {
   case class On()  extends LightState
   case class Off() extends LightState
 
+  sealed trait Suit
+  case class Swords() extends Suit
+  case class Clubs()  extends Suit
+  case class Cups()   extends Suit
+  case class Golds()  extends Suit
+
+  case class Card(number: Int, seme: Suit)
+
+  case class Player(hand: Hand)
+  case class Table(card1: Card, card2: Card, card3: Card, card4: Card)
+  case class Hand(card1: Card, card2: Card, card3: Card)
+  case class Deck(card1: Card, card2: Card)
+  case class Game(player1: Player, player2: Player, deck: Deck, table: Table)
+
+  sealed trait TableStatus
+  case class NoCard()                                                      extends TableStatus
+  case class FourCards(card1: Card, card2: Card, card3: Card, card4: Card) extends TableStatus
+
   /*
    * TODO: Model "Scopa" the italian card game, below the game description. :-)
    *       After modeling the domain implements the test.
@@ -55,6 +75,32 @@ class ModelData extends munit.FunSuite {
    */
 
   test("represent initial match state") {
+    val player1 = Player(
+      Hand(
+        Card(2, Golds()),
+        Card(5, Swords()),
+        Card(7, Clubs())
+      )
+    )
+
+    val player2 = Player(
+      Hand(
+        Card(1, Cups()),
+        Card(2, Clubs()),
+        Card(9, Golds())
+      )
+    )
+
+    val table = Table(
+      Card(4, Clubs()),
+      Card(10, Swords()),
+      Card(8, Golds()),
+      Card(1, Swords())
+    )
+
+    val deck  = Deck(Card(1, Swords()), Card(10, Clubs()))
+    val game = Game(player1, player1, deck, table)
+
     // TODO: build the first player w/ 2 of Golds, 5 of Swords and 7 of Clubs
     // TODO: build the second player w/ 1 of Cups, 2 of Clubs and 9 of Golds
     // TODO: build the table w/ 4 of Clubs, 10 of Swords, 8 of Golds and 1 of Swords

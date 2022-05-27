@@ -48,17 +48,14 @@ class ProgramAsValues extends munit.FunSuite {
   object SplitBuildFromExecute {
     type Num = () => Int
 
-    def num(x: Int): Num =
-      ???
+    def num(x: Int): Num = () => x 
 
-    def plus(x: Num, y: Num): Num =
-      ???
+    def plus(x: Num, y: Num): Num = () => x() + y()
 
-    def times(x: Num, y: Num): Num =
-      ???
+    def times(x: Num, y: Num): Num = () => x() * y()
   }
 
-  test("split building a program from executing it".ignore) {
+  test("split building a program from executing it") {
     import SplitBuildFromExecute._
 
     // TODO: implements SplitBuildFromExecute functions
@@ -74,35 +71,41 @@ class ProgramAsValues extends munit.FunSuite {
 
   object DifferentEvaluator {
     sealed trait Expr
+    case class Num(x: Int) extends Expr
+    case class Plus(x: Expr, y: Expr) extends Expr
+    case class Times(x: Expr, y: Expr) extends Expr
 
-    def num(x: Int): Expr =
-      ???
-
-    def plus(x: Expr, y: Expr): Expr =
-      ???
-
-    def times(x: Expr, y: Expr): Expr =
-      ???
+    def num(x: Int): Expr = Num(x)
+    def plus(x: Expr, y: Expr): Expr = Plus(x, y)
+    def times(x: Expr, y: Expr): Expr = Times(x, y)
 
     def eval(e: Expr): Int =
-      ???
+      e match {
+        case Num(x) => x
+        case Plus(x, y) => eval(x) + eval(y)
+        case Times(x, y) => eval(x) * eval(y)
+        
+      }
 
     def evalPrint(e: Expr): String =
-      ???
+      e match {
+        case Num(x) => s"$x"
+        case Plus(x, y) => s"(${evalPrint(x)} + ${evalPrint(y)})"
+        case Times(x, y) => s"(${evalPrint(x)} * ${evalPrint(y)})"
+      }
   }
 
-  test("execute program w/ different evaluator".ignore) {
+  test("execute program w/ different evaluator") {
     import DifferentEvaluator._
-
     // TODO: implements DifferentEvaluator functions
-
     // BUILD
     val program = times(plus(num(1), num(1)), num(2))
-
+    
+    assertEquals(evalPrint(num(1)), "1")
     // EXECUTE 1
     assertEquals(eval(program), 4)
-
     // EXECUTE 2
     assertEquals(evalPrint(program), "((1 + 1) * 2)")
+
   }
 }
